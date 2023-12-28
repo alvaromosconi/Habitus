@@ -1,6 +1,8 @@
 ﻿using Habitus.Models;
+using Habitus.Models.Auth;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-public class HabitusContext : DbContext
+public class HabitusContext : IdentityDbContext<HabitusUser>
 {
     public HabitusContext(DbContextOptions options): base(options)
     {

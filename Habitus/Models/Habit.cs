@@ -1,4 +1,6 @@
-﻿namespace Habitus.Models;
+﻿using Habitus.Models.Auth;
+
+namespace Habitus.Models;
 
 public class Habit
 {

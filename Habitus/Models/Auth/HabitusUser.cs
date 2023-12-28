@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Habitus.Models;
+namespace Habitus.Models.Auth;
 
 public class HabitusUser : IdentityUser
 {
