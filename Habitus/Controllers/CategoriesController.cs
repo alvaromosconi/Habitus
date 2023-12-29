@@ -44,6 +44,45 @@ public class CategoriesController : ControllerBase
             return BadRequest(result.Message);
 
         var categoryResource = _mapper.Map<Category, CategoryResource>(result.Category);
+
         return Ok(categoryResource);
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutCategory(int id, [FromBody] SaveCategoryResource resource)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState.GetErrorMessages());
+
+        var category = _mapper.Map<SaveCategoryResource, Category>(resource);
+        var result = await _categoryService.UpdateAsync(id, category);
+
+        if (!result.Success)
+        {
+            return BadRequest(result.Message);
+        }
+
+        var categoryResource = _mapper.Map<Category, CategoryResource>(result.Category);
+
+        return Ok(categoryResource);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteCategory(int id)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState.GetErrorMessages());
+
+        var result = await _categoryService.DeleteAsync(id);
+
+        if (!result.Success)
+        {
+            return BadRequest(result.Message);
+        }
+
+        var categoryResource = _mapper.Map<Category, CategoryResource>(result.Category);
+
+        return Ok(categoryResource);
+    }
+
 }
