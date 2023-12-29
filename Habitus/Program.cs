@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using AutoMapper;
+using Habitus.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,7 @@ builder.Services.AddDbContext<HabitusContext>(opt => opt.UseSqlServer(builder.Co
 
 builder.Services.AddTransient<IAuthService, AuthService>();
 
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();    
 
@@ -50,6 +53,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 
@@ -67,6 +71,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 
 app.Run();
