@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Habitus.Models.Auth;
+namespace Habitus.Domain.Models.Auth;
 
 public class Registration
 {

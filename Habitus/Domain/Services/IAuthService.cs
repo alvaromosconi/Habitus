@@ -1,6 +1,6 @@
-﻿using Habitus.Models.Auth;
+﻿using Habitus.Domain.Models.Auth;
 
-namespace Habitus.Services;
+namespace Habitus.Domain.Services;
 
 public interface IAuthService
 {

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Habitus.Models;
+using Habitus.Domain.Models;
 using Habitus.Resources;
 
 namespace Habitus.Mapping;

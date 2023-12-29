@@ -1,6 +1,6 @@
-﻿using Habitus.Models;
+﻿using Habitus.Domain.Models;
 
-namespace Habitus.Repositories;
+namespace Habitus.Domain.Repositories;
 
 public interface ICategoryRepository
 {

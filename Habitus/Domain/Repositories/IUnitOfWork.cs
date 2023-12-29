@@ -1,4 +1,4 @@
-﻿namespace Habitus.Repositories;
+﻿namespace Habitus.Domain.Repositories;
 
 public interface IUnitOfWork
 {

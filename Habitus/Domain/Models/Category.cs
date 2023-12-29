@@ -1,4 +1,4 @@
-﻿namespace Habitus.Models;
+﻿namespace Habitus.Domain.Models;
 
 public record Category
 {

@@ -1,4 +1,4 @@
-﻿namespace Habitus.Models;
+﻿namespace Habitus.Domain.Models;
 
 public record Habit
 {
@@ -13,7 +13,7 @@ public record Habit
 };
 
 public enum HabitFrequency
-{ 
+{
     Minutely,
     Hourly,
     Daily,

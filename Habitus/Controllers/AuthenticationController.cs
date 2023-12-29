@@ -1,5 +1,5 @@
-﻿using Habitus.Models.Auth;
-using Habitus.Services;
+﻿using Habitus.Domain.Models.Auth;
+using Habitus.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Habitus.Controllers;

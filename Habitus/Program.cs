@@ -1,4 +1,3 @@
-using Habitus.Models.Auth;
 using Habitus.Repositories;
 using Habitus.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,6 +7,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AutoMapper;
 using Habitus.Persistence.Repositories;
+using Habitus.Domain.Repositories;
+using Habitus.Domain.Services;
+using Habitus.Domain.Models.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 

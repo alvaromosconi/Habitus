@@ -1,4 +1,4 @@
-﻿namespace Habitus.Models.Auth;
+﻿namespace Habitus.Domain.Models.Auth;
 
 public static class UserRoles
 {

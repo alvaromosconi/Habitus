@@ -1,4 +1,4 @@
-﻿using Habitus.Repositories;
+﻿using Habitus.Domain.Repositories;
 using System;
 
 namespace Habitus.Persistence.Repositories;

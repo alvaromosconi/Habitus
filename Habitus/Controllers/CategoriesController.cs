@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Habitus.Models;
-using Habitus.Services;
 using AutoMapper;
 using Habitus.Resources;
 using Habitus.Extensions;
+using Habitus.Domain.Services;
+using Habitus.Domain.Models;
 
 namespace Habitus.Controllers;
 
@@ -43,7 +43,7 @@ public class CategoriesController : ControllerBase
         if (!result.Success)
             return BadRequest(result.Message);
 
-        var categoryResource = _mapper.Map<Category, CategoryResource>(result.Category);
+        var categoryResource = _mapper.Map<Category, CategoryResource>(result.Resource);
 
         return Ok(categoryResource);
     }
@@ -62,7 +62,7 @@ public class CategoriesController : ControllerBase
             return BadRequest(result.Message);
         }
 
-        var categoryResource = _mapper.Map<Category, CategoryResource>(result.Category);
+        var categoryResource = _mapper.Map<Category, CategoryResource>(result.Resource);
 
         return Ok(categoryResource);
     }
@@ -80,7 +80,7 @@ public class CategoriesController : ControllerBase
             return BadRequest(result.Message);
         }
 
-        var categoryResource = _mapper.Map<Category, CategoryResource>(result.Category);
+        var categoryResource = _mapper.Map<Category, CategoryResource>(result.Resource);
 
         return Ok(categoryResource);
     }

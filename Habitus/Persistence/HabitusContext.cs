@@ -1,5 +1,5 @@
-﻿using Habitus.Models;
-using Habitus.Models.Auth;
+﻿using Habitus.Domain.Models;
+using Habitus.Domain.Models.Auth;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 public class HabitusContext : IdentityDbContext<HabitusUser>

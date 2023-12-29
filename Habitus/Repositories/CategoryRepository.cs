@@ -1,5 +1,5 @@
-﻿using Habitus.Models;
-using Habitus.Services.Communication;
+﻿using Habitus.Domain.Models;
+using Habitus.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Habitus.Repositories;
