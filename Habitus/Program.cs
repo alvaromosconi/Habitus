@@ -1,4 +1,5 @@
 using Habitus.Models.Auth;
+using Habitus.Repositories;
 using Habitus.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +15,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<HabitusContext>(opt => opt.UseSqlServer(builder.Configuration["HabitusApp:ConnectionString"]));
 
 builder.Services.AddTransient<IAuthService, AuthService>();
+
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();    
 
 // Add Identity
 builder.Services.AddIdentity<HabitusUser, IdentityRole>()
@@ -63,5 +67,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
 
 app.Run();

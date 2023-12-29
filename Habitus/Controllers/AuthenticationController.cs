@@ -26,9 +26,12 @@ public class AuthenticationController : ControllerBase
         {
             if (!ModelState.IsValid)
                 return BadRequest("Invalid payload");
+            
             var (status, message) = await _authService.Login(model);
+            
             if (status == 0)
                 return BadRequest(message);
+            
             return Ok(message);
         }
         catch (Exception ex)
@@ -46,11 +49,14 @@ public class AuthenticationController : ControllerBase
         {
             if (!ModelState.IsValid)
                 return BadRequest("Invalid payload");
-            var (status, message) = await _authService.Registeration(model, UserRoles.User);
+            
+            var (status, message) = await _authService.Registration(model, UserRoles.User);
+            
             if (status == 0)
             {
                 return BadRequest(message);
             }
+            
             return CreatedAtAction(nameof(Register), model);
 
         }

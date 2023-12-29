@@ -18,9 +18,10 @@ public class AuthService : IAuthService
         this.roleManager = roleManager;
         _configuration = configuration;
     }
-    public async Task<(int, string)> Registeration(Registration model, string role)
+    public async Task<(int, string)> Registration(Registration model, string role)
     {
         var userExists = await userManager.FindByNameAsync(model.Username);
+        
         if (userExists != null)
             return (0, "User already exists");
 
@@ -30,7 +31,9 @@ public class AuthService : IAuthService
             SecurityStamp = Guid.NewGuid().ToString(),
             UserName = model.Username,
         };
+
         var createUserResult = await userManager.CreateAsync(user, model.Password);
+        
         if (!createUserResult.Succeeded)
             return (0, "User creation failed! Please check user details and try again.");
 
@@ -46,23 +49,28 @@ public class AuthService : IAuthService
     public async Task<(int, string)> Login(Login model)
     {
         var user = await userManager.FindByNameAsync(model.Username);
+        
         if (user == null)
             return (0, "Invalid username");
+        
         if (!await userManager.CheckPasswordAsync(user, model.Password))
             return (0, "Invalid password");
 
         var userRoles = await userManager.GetRolesAsync(user);
         var authClaims = new List<Claim>
-            {
-               new Claim(ClaimTypes.Name, user.UserName),
-               new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        };
 
         foreach (var userRole in userRoles)
         {
             authClaims.Add(new Claim(ClaimTypes.Role, userRole));
         }
+
         string token = GenerateToken(authClaims);
+        
         return (1, token);
     }
 
@@ -82,6 +90,8 @@ public class AuthService : IAuthService
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
+        
         return tokenHandler.WriteToken(token);
     }
+
 }
