@@ -175,7 +175,7 @@ namespace Habitus.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -187,8 +187,8 @@ namespace Habitus.Migrations
                 {
                     table.PrimaryKey("PK_Habits", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Habits_AspNetUsers_UserID",
-                        column: x => x.UserID,
+                        name: "FK_Habits_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -245,9 +245,9 @@ namespace Habitus.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Habits_UserID",
+                name: "IX_Habits_UserId",
                 table: "Habits",
-                column: "UserID");
+                column: "UserId");
         }
 
         /// <inheritdoc />

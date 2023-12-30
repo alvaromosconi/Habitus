@@ -9,6 +9,7 @@ using Habitus.Persistence.Repositories;
 using Habitus.Domain.Repositories;
 using Habitus.Domain.Services;
 using Habitus.Domain.Models.Auth;
+using Habitus.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddDbContext<HabitusContext>(opt => opt.UseSqlServer(builder.Configuration["HabitusApp:ConnectionString"]));
+
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddTransient<IAuthService, AuthService>();
 

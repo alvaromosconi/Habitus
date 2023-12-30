@@ -5,7 +5,7 @@ namespace Habitus.Domain.Models;
 public record Habit
 {
     public int Id { get; set; }
-    public string UserID { get; set; }
+    public string UserId { get; set; }
     public HabitusUser User { get; set; }
     public int CategoryId { get; set; }
     public Category Category { get; set; }

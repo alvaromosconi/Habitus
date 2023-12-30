@@ -2,7 +2,6 @@
 using Habitus.Domain.Repositories;
 using Habitus.Domain.Services;
 using Habitus.Domain.Services.Communication;
-using Habitus.Persistence.Repositories;
 
 namespace Habitus.Services;
 
@@ -17,6 +16,7 @@ public class HabitService : IHabitService
                         IUnitOfWork unitOfWork)
     {
         _habitRepository = habitRepository;
+        _categoryRepository = categoryRepository;
         _unitOfWork = unitOfWork;
     }
     public async Task<IEnumerable<Habit>> ListAsync()

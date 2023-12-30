@@ -1,13 +1,9 @@
-﻿using Habitus.Domain.Models.Auth;
-using Habitus.Domain.Models;
+﻿using Habitus.Domain.Models;
 using System.ComponentModel.DataAnnotations;
-
 namespace Habitus.Resources;
 
 public record SaveHabitResource
 {
-    [Required]
-    public string UserId { get; init; }
     [Required]
     public int CategoryId { get; init; }
     [Required]

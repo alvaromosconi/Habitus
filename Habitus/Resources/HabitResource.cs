@@ -6,7 +6,7 @@ namespace Habitus.Resources;
 public record HabitResource
 {
     public int Id { get; init; }
-    public HabitusUser User { get; init; }
+    public HabitusUserResource User { get; init; }
     public CategoryResource Category { get; init; }
     public string Name { get; init; }
     public string? Description { get; init; }

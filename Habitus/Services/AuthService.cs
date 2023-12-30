@@ -95,4 +95,9 @@ public class AuthService : IAuthService
         return tokenHandler.WriteToken(token);
     }
 
+    public async Task<HabitusUser?> GetUserByIdAsync(string userId)
+    {
+        return await userManager.FindByIdAsync(userId);
+    }
+
 }

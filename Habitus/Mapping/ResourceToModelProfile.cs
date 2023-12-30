@@ -9,6 +9,6 @@ public class ResourceToModelProfile : Profile
     public ResourceToModelProfile()
     {
         CreateMap<SaveCategoryResource, Category>();
-        CreateMap<SaveHabitResource, Category>();
+        CreateMap<SaveHabitResource, Habit>();
     }
 }

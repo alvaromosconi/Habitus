@@ -66,4 +66,5 @@ public class AuthenticationController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
+
 }

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Habitus.Migrations
 {
     [DbContext(typeof(HabitusContext))]
-    [Migration("20231230000744_init")]
+    [Migration("20231230155026_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -133,7 +133,7 @@ namespace Habitus.Migrations
                     b.Property<int>("State")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserID")
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -141,7 +141,7 @@ namespace Habitus.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Habits");
                 });
@@ -289,7 +289,7 @@ namespace Habitus.Migrations
 
                     b.HasOne("Habitus.Domain.Models.Auth.HabitusUser", "User")
                         .WithMany("UserHabits")
-                        .HasForeignKey("UserID")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
