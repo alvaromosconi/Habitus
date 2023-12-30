@@ -1,0 +1,39 @@
+﻿using Habitus.Domain.Models;
+using Habitus.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
+
+namespace Habitus.Persistence.Repositories;
+
+public class HabitRepository : IHabitRepository
+{
+    private readonly HabitusContext _context;
+    public HabitRepository(HabitusContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<IEnumerable<Habit>> ListAsync()
+    {
+        return await _context.Habits.ToListAsync();
+    }
+
+    public async Task AddAsync(Habit habit)
+    {
+        await _context.Habits.AddAsync(habit);
+    }
+
+    public async Task<Habit> FindByIdAsync(int id)
+    {
+        return await _context.Habits.FindAsync(id);
+    }
+
+    public void Update(Habit habit)
+    {
+        _context.Habits.Update(habit);
+    }
+
+    public void Remove(Habit habit)
+    {
+        _context.Habits.Remove(habit);
+    }
+}

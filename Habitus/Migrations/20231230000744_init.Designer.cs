@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Habitus.Migrations
 {
     [DbContext(typeof(HabitusContext))]
-    [Migration("20231229150254_init")]
+    [Migration("20231230000744_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -24,7 +24,7 @@ namespace Habitus.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Habitus.Models.Auth.HabitusUser", b =>
+            modelBuilder.Entity("Habitus.Domain.Models.Auth.HabitusUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -89,7 +89,7 @@ namespace Habitus.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Habitus.Models.Category", b =>
+            modelBuilder.Entity("Habitus.Domain.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -106,7 +106,7 @@ namespace Habitus.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("Habitus.Models.Habit", b =>
+            modelBuilder.Entity("Habitus.Domain.Models.Habit", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -123,9 +123,6 @@ namespace Habitus.Migrations
                     b.Property<int>("Frequency")
                         .HasColumnType("int");
 
-                    b.Property<string>("HabitusUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -138,13 +135,13 @@ namespace Habitus.Migrations
 
                     b.Property<string>("UserID")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("HabitusUserId");
+                    b.HasIndex("UserID");
 
                     b.ToTable("Habits");
                 });
@@ -282,17 +279,23 @@ namespace Habitus.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Habitus.Models.Habit", b =>
+            modelBuilder.Entity("Habitus.Domain.Models.Habit", b =>
                 {
-                    b.HasOne("Habitus.Models.Category", null)
+                    b.HasOne("Habitus.Domain.Models.Category", "Category")
                         .WithMany("habits")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Habitus.Models.Auth.HabitusUser", null)
+                    b.HasOne("Habitus.Domain.Models.Auth.HabitusUser", "User")
                         .WithMany("UserHabits")
-                        .HasForeignKey("HabitusUserId");
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -306,7 +309,7 @@ namespace Habitus.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Habitus.Models.Auth.HabitusUser", null)
+                    b.HasOne("Habitus.Domain.Models.Auth.HabitusUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -315,7 +318,7 @@ namespace Habitus.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Habitus.Models.Auth.HabitusUser", null)
+                    b.HasOne("Habitus.Domain.Models.Auth.HabitusUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -330,7 +333,7 @@ namespace Habitus.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Habitus.Models.Auth.HabitusUser", null)
+                    b.HasOne("Habitus.Domain.Models.Auth.HabitusUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -339,19 +342,19 @@ namespace Habitus.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Habitus.Models.Auth.HabitusUser", null)
+                    b.HasOne("Habitus.Domain.Models.Auth.HabitusUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Habitus.Models.Auth.HabitusUser", b =>
+            modelBuilder.Entity("Habitus.Domain.Models.Auth.HabitusUser", b =>
                 {
                     b.Navigation("UserHabits");
                 });
 
-            modelBuilder.Entity("Habitus.Models.Category", b =>
+            modelBuilder.Entity("Habitus.Domain.Models.Category", b =>
                 {
                     b.Navigation("habits");
                 });

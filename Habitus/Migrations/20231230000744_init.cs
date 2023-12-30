@@ -175,23 +175,23 @@ namespace Habitus.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserID = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NotificationTime = table.Column<TimeSpan>(type: "time", nullable: false),
                     Frequency = table.Column<int>(type: "int", nullable: false),
-                    State = table.Column<int>(type: "int", nullable: false),
-                    HabitusUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    State = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Habits", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Habits_AspNetUsers_HabitusUserId",
-                        column: x => x.HabitusUserId,
+                        name: "FK_Habits_AspNetUsers_UserID",
+                        column: x => x.UserID,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Habits_Categories_CategoryId",
                         column: x => x.CategoryId,
@@ -245,9 +245,9 @@ namespace Habitus.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Habits_HabitusUserId",
+                name: "IX_Habits_UserID",
                 table: "Habits",
-                column: "HabitusUserId");
+                column: "UserID");
         }
 
         /// <inheritdoc />

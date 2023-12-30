@@ -2,7 +2,7 @@
 using Habitus.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace Habitus.Repositories;
+namespace Habitus.Persistence.Repositories;
 
 public class CategoryRepository : ICategoryRepository
 {
