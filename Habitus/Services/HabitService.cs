@@ -47,12 +47,58 @@ public class HabitService : IHabitService
     }
 
     public async Task<Response<Habit>> UpdateAsync(int id, Habit habit)
-    {
-        throw new NotImplementedException();
+    { 
+        try
+        {
+            var existingHabit = await _habitRepository.FindByIdAsync(id);
+
+            if (existingHabit == null)
+            {
+                return new Response<Habit>("Habit not found.");
+            }
+
+            var existingCategory = await _categoryRepository.FindByIdAsync(habit.CategoryId);
+
+            if (existingCategory == null)
+            {
+                return new Response<Habit>("Invalid category");
+            }
+
+            existingHabit.State = habit.State;
+            existingHabit.NotificationTime = habit.NotificationTime;
+            existingHabit.Description = habit.Description;
+            existingHabit.CategoryId = habit.CategoryId;
+            existingHabit.Name = habit.Name;
+            existingHabit.Frequency = habit.Frequency;
+
+            _habitRepository.Update(habit);
+            await _unitOfWork.CompleteAsync();
+
+            return new Response<Habit>(existingHabit);
+        }
+        catch (Exception ex)
+        {
+            return new Response<Habit>($"An error occurred when saving the category: {ex.Message}");
+        }
     }
 
     public async Task<Response<Habit>> DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+        var existingHabit = await _habitRepository.FindByIdAsync(id);
+
+        if (existingHabit == null)
+            return new Response<Habit>("Habit not found.");
+
+        try
+        {
+            _habitRepository.Remove(existingHabit);
+            await _unitOfWork.CompleteAsync();
+
+            return new Response<Habit>(existingHabit);
+        }
+        catch (Exception ex)
+        {
+            return new Response<Habit>($"An error occurred when deleting the habit: {ex.Message}");
+        }
     }
 }

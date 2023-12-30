@@ -14,7 +14,10 @@ public class HabitRepository : IHabitRepository
 
     public async Task<IEnumerable<Habit>> ListAsync()
     {
-        return await _context.Habits.ToListAsync();
+        return await _context.Habits
+                             .Include(h => h.Category)
+                             .Include(h => h.User)
+                             .ToListAsync();
     }
 
     public async Task AddAsync(Habit habit)
@@ -24,7 +27,10 @@ public class HabitRepository : IHabitRepository
 
     public async Task<Habit> FindByIdAsync(int id)
     {
-        return await _context.Habits.FindAsync(id);
+        return await _context.Habits
+                             .Include(h => h.Category)
+                             .Include(h => h.User)
+                             .FirstOrDefaultAsync(h => h.Id == id);
     }
 
     public void Update(Habit habit)

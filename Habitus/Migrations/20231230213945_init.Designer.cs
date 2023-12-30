@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Habitus.Migrations
 {
     [DbContext(typeof(HabitusContext))]
-    [Migration("20231230155026_init")]
+    [Migration("20231230213945_init")]
     partial class init
     {
         /// <inheritdoc />
