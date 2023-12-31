@@ -27,16 +27,12 @@ public class CategoriesController : ControllerBase
         var categories = await _categoryService.ListAsync();
         var resources = _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryResource>>(categories);
 
-
         return Ok(resources);
     }
 
     [HttpPost]
     public async Task<IActionResult> PostCategory([FromBody] SaveCategoryResource resource)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         var category = _mapper.Map<SaveCategoryResource, Category>(resource);
         var result = await _categoryService.SaveAsync(category);
 

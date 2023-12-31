@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
-using Elfie.Serialization;
 using Habitus.Domain.Models;
 using Habitus.Domain.Models.Auth;
 using Habitus.Domain.Services;
-using Habitus.Extensions;
 using Habitus.Resources;
-using Habitus.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -43,11 +40,6 @@ public class HabitsController : ControllerBase
     [Authorize]
     public async Task<IActionResult> PostHabit([FromBody] SaveHabitResource resource)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState.GetErrorMessages());
-        }
-
         var habit = _mapper.Map<SaveHabitResource, Habit>(resource);
 
         var user = await GetCurrentUserAsync();
@@ -69,11 +61,6 @@ public class HabitsController : ControllerBase
     [Authorize]
     public async Task<IActionResult> PutHabit(int id, [FromBody] SaveHabitResource resource)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState.GetErrorMessages());
-        }
-        
         var habit = _mapper.Map<SaveHabitResource, Habit>(resource);
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         habit.UserId = userId;
@@ -94,9 +81,6 @@ public class HabitsController : ControllerBase
     [Authorize]
     public async Task<IActionResult> DeleteHabit(int id)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState.GetErrorMessages());
-
         var result = await _habitService.DeleteAsync(id);
 
         if (!result.Success)

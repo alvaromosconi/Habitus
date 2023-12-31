@@ -4,31 +4,29 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using AutoMapper;
 using Habitus.Persistence.Repositories;
 using Habitus.Domain.Repositories;
 using Habitus.Domain.Services;
 using Habitus.Domain.Models.Auth;
-using Habitus.Mapping;
+using Habitus.Controllers.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 // Add services to the container.
-
 builder.Services.AddDbContext<HabitusContext>(opt => opt.UseSqlServer(builder.Configuration["HabitusApp:ConnectionString"]));
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+// Add custom services
 builder.Services.AddTransient<IAuthService, AuthService>();
-
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IHabitRepository, HabitRepository>();
 builder.Services.AddScoped<IHabitService, HabitService>();
 
-// Add Identity
+// Add Identity Service
 builder.Services.AddIdentity<HabitusUser, IdentityRole>()
                 .AddEntityFrameworkStores<HabitusContext>()
                 .AddDefaultTokenProviders();
@@ -55,8 +53,11 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
+{
+    options.InvalidModelStateResponseFactory = InvalidModelStateResponseFactory.ProduceErrorResponse;
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program));
