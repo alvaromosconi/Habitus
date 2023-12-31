@@ -47,30 +47,30 @@ public class HabitService : IHabitService
     }
 
     public async Task<Response<Habit>> UpdateAsync(int id, Habit habit)
-    { 
-        try
+    {
+        var existingHabit = await _habitRepository.FindByIdAsync(id);
+
+        if (existingHabit == null)
         {
-            var existingHabit = await _habitRepository.FindByIdAsync(id);
+            return new Response<Habit>("Habit not found.");
+        }
 
-            if (existingHabit == null)
-            {
-                return new Response<Habit>("Habit not found.");
-            }
+        var existingCategory = await _categoryRepository.FindByIdAsync(habit.CategoryId);
 
-            var existingCategory = await _categoryRepository.FindByIdAsync(habit.CategoryId);
+        if (existingCategory == null)
+        {
+            return new Response<Habit>("Invalid category");
+        }
 
-            if (existingCategory == null)
-            {
-                return new Response<Habit>("Invalid category");
-            }
+        existingHabit.State = habit.State;
+        existingHabit.NotificationTime = habit.NotificationTime;
+        existingHabit.Description = habit.Description;
+        existingHabit.CategoryId = habit.CategoryId;
+        existingHabit.Name = habit.Name;
+        existingHabit.Frequency = habit.Frequency;
 
-            existingHabit.State = habit.State;
-            existingHabit.NotificationTime = habit.NotificationTime;
-            existingHabit.Description = habit.Description;
-            existingHabit.CategoryId = habit.CategoryId;
-            existingHabit.Name = habit.Name;
-            existingHabit.Frequency = habit.Frequency;
-
+        try
+        { 
             _habitRepository.Update(habit);
             await _unitOfWork.CompleteAsync();
 
