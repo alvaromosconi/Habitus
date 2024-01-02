@@ -27,7 +27,7 @@ public class HabitsController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize]
+ 
     public async Task<ActionResult<HabitResource>> GetHabits()
     {
         var habits = await _habitService.ListAsync();
