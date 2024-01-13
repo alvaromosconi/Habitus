@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Habitus.Migrations
 {
     [DbContext(typeof(HabitusContext))]
-    [Migration("20231230213945_init")]
+    [Migration("20240115004501_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -120,15 +120,16 @@ namespace Habitus.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Frequency")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<TimeSpan>("NotificationTime")
+                    b.Property<TimeOnly>("NotificationTime")
                         .HasColumnType("time");
+
+                    b.Property<string>("SelectedDays")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("State")
                         .HasColumnType("int");

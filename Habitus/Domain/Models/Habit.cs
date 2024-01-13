@@ -1,9 +1,14 @@
 ﻿using Habitus.Domain.Models.Auth;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Habitus.Domain.Models;
 
-public record Habit
+public class Habit
 {
+    private const string DayOfWeekSeparator = ", ";
+
+    [Key]
     public int Id { get; set; }
     public string UserId { get; set; }
     public virtual HabitusUser User { get; set; }
@@ -11,24 +16,18 @@ public record Habit
     public virtual Category Category { get; set; }
     public string Name { get; set; }
     public string? Description { get; set; }
-    public TimeSpan NotificationTime { get; set; }
-    public HabitFrequency Frequency { get; set; }
+    public List<DayOfWeek> SelectedDays { get; set; }
+    public TimeOnly NotificationTime { get; set; }
     public HabitState State { get; set; }
+
 };
 
-public enum HabitFrequency
-{
-    Minutely,
-    Hourly,
-    Daily,
-    Weekly,
-    Monthly,
-    Custom
-}
-
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum HabitState
 {
     Active,
     Inactive
 }
+
+
 

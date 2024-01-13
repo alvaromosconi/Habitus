@@ -64,14 +64,14 @@ public class HabitService : IHabitService
 
         existingHabit.State = habit.State;
         existingHabit.NotificationTime = habit.NotificationTime;
+        existingHabit.SelectedDays = habit.SelectedDays;
         existingHabit.Description = habit.Description;
         existingHabit.CategoryId = habit.CategoryId;
         existingHabit.Name = habit.Name;
-        existingHabit.Frequency = habit.Frequency;
 
         try
         { 
-            _habitRepository.Update(habit);
+            _habitRepository.Update(existingHabit);
             await _unitOfWork.CompleteAsync();
 
             return new Response<Habit>(existingHabit);

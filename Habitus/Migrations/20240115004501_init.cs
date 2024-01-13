@@ -179,8 +179,8 @@ namespace Habitus.Migrations
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NotificationTime = table.Column<TimeSpan>(type: "time", nullable: false),
-                    Frequency = table.Column<int>(type: "int", nullable: false),
+                    SelectedDays = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NotificationTime = table.Column<TimeOnly>(type: "time", nullable: false),
                     State = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

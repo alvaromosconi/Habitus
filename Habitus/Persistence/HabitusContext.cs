@@ -2,6 +2,9 @@
 using Habitus.Domain.Models.Auth;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
 public class HabitusContext : IdentityDbContext<HabitusUser>
 {
     public HabitusContext(DbContextOptions options): base(options)
@@ -10,4 +13,20 @@ public class HabitusContext : IdentityDbContext<HabitusUser>
     public DbSet<Habit> Habits { get; set; }
     public DbSet<HabitusUser> Users { get; set; }
     public DbSet<Category> Categories { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        var dayOfWeekConverter = new ValueConverter<List<DayOfWeek>, string>(
+            v => string.Join(", ", v),
+            s => s.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries)
+                  .Select(dayStr => Enum.Parse<DayOfWeek>(dayStr))
+                  .ToList()
+        );
+
+        modelBuilder.Entity<Habit>()
+            .Property(e => e.SelectedDays)
+            .HasConversion(dayOfWeekConverter);
+    }
 }

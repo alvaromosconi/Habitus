@@ -2,6 +2,7 @@
 using Habitus.Domain.Models;
 using Habitus.Domain.Models.Auth;
 using Habitus.Domain.Services;
+using Habitus.Requests;
 using Habitus.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,8 @@ namespace Habitus.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Produces("application/json")]
+
 public class HabitsController : ControllerBase
 {
     private readonly IHabitService _habitService;
@@ -26,8 +29,13 @@ public class HabitsController : ControllerBase
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// List all habits
+    /// </summary>
     [HttpGet]
- 
+    [ProducesResponseType(typeof(IEnumerable<HabitResource>), 200)]
+    [ProducesResponseType(typeof(ErrorResource), 401)]
+    [Authorize]
     public async Task<ActionResult<HabitResource>> GetHabits()
     {
         var habits = await _habitService.ListAsync();
@@ -36,11 +44,17 @@ public class HabitsController : ControllerBase
         return Ok(resources);
     }
 
+    /// <summary>
+    /// Add a new habit
+    /// </summary>
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> PostHabit([FromBody] SaveHabitResource resource)
+    [ProducesResponseType(typeof(HabitResource), 201)]
+    [ProducesResponseType(typeof(ErrorResource), 400)]
+    [ProducesResponseType(typeof(ErrorResource), 401)]
+    public async Task<IActionResult> PostHabit([FromBody] SaveHabitRequest resource)
     {
-        var habit = _mapper.Map<SaveHabitResource, Habit>(resource);
+        var habit = _mapper.Map<SaveHabitRequest, Habit>(resource);
 
         var user = await GetCurrentUserAsync();
         habit.User = user;
@@ -57,11 +71,17 @@ public class HabitsController : ControllerBase
         return Ok(habitResource);
     }
 
+    /// <summary>
+    /// Edit a habit
+    /// </summary>
     [HttpPut("{id}")]
     [Authorize]
-    public async Task<IActionResult> PutHabit(int id, [FromBody] SaveHabitResource resource)
+    [ProducesResponseType(typeof(HabitResource), 201)]
+    [ProducesResponseType(typeof(ErrorResource), 400)]
+    [ProducesResponseType(typeof(ErrorResource), 401)]
+    public async Task<IActionResult> PutHabit(int id, [FromBody] SaveHabitRequest resource)
     {
-        var habit = _mapper.Map<SaveHabitResource, Habit>(resource);
+        var habit = _mapper.Map<SaveHabitRequest, Habit>(resource);
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         habit.UserId = userId;
         var result = await _habitService.UpdateAsync(id, habit);
@@ -77,8 +97,14 @@ public class HabitsController : ControllerBase
     }
 
 
+    /// <summary>
+    /// Delete a habit
+    /// </summary>
     [HttpDelete("{id}")]
     [Authorize]
+    [ProducesResponseType(typeof(HabitResource), 201)]
+    [ProducesResponseType(typeof(ErrorResource), 400)]
+    [ProducesResponseType(typeof(ErrorResource), 401)]
     public async Task<IActionResult> DeleteHabit(int id)
     {
         var result = await _habitService.DeleteAsync(id);

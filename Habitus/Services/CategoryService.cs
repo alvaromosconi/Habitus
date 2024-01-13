@@ -50,7 +50,7 @@ public class CategoryService : ICategoryService
 
         try
         {
-            _categoryRepository.Update(category);
+            _categoryRepository.Update(existingCategory);
             await _unitOfWork.CompleteAsync();
 
             return new Response<Category>(existingCategory);

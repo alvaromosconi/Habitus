@@ -4,11 +4,15 @@ using Habitus.Resources;
 using Habitus.Extensions;
 using Habitus.Domain.Services;
 using Habitus.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
+using Swashbuckle.AspNetCore.Filters;
+using Habitus.Requests;
 
 namespace Habitus.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Produces("application/json")]
 public class CategoriesController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
@@ -21,7 +25,14 @@ public class CategoriesController : ControllerBase
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// Lists all categories.
+    /// </summary>
     [HttpGet]
+    [Authorize]
+    [ProducesResponseType(typeof(CategoryResource), 200)]
+    [ProducesResponseType(typeof(ErrorResource), 400)]
+    [ProducesResponseType(typeof(ErrorResource), 401)]
     public async Task<ActionResult<CategoryResource>> GetCategories()
     {
         var categories = await _categoryService.ListAsync();
@@ -30,10 +41,17 @@ public class CategoriesController : ControllerBase
         return Ok(resources);
     }
 
+    /// <summary>
+    /// Add a new category
+    /// </summary>
     [HttpPost]
-    public async Task<IActionResult> PostCategory([FromBody] SaveCategoryResource resource)
+    [Authorize]
+    [ProducesResponseType(typeof(CategoryResource), 201)]
+    [ProducesResponseType(typeof(ErrorResource), 400)]
+    [ProducesResponseType(typeof(ErrorResource), 401)]
+    public async Task<IActionResult> PostCategory([FromBody] SaveCategoryRequest resource)
     {
-        var category = _mapper.Map<SaveCategoryResource, Category>(resource);
+        var category = _mapper.Map<SaveCategoryRequest, Category>(resource);
         var result = await _categoryService.SaveAsync(category);
 
         if (!result.Success)
@@ -44,13 +62,21 @@ public class CategoriesController : ControllerBase
         return Ok(categoryResource);
     }
 
+    /// <summary>
+    /// Edit a category
+    /// </summary>
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutCategory(int id, [FromBody] SaveCategoryResource resource)
+    [Authorize]
+    [ProducesResponseType(typeof(CategoryResource), 201)]
+    [ProducesResponseType(typeof(ErrorResource), 400)]
+    [ProducesResponseType(typeof(ErrorResource), 401)]
+    [SwaggerRequestExample(typeof(SaveCategoryRequest), typeof(SaveCategoryRequestExample))]
+    public async Task<IActionResult> PutCategory(int id, [FromBody] SaveCategoryRequest resource)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState.GetErrorMessages());
 
-        var category = _mapper.Map<SaveCategoryResource, Category>(resource);
+        var category = _mapper.Map<SaveCategoryRequest, Category>(resource);
         var result = await _categoryService.UpdateAsync(id, category);
 
         if (!result.Success)
@@ -63,7 +89,13 @@ public class CategoriesController : ControllerBase
         return Ok(categoryResource);
     }
 
+    /// <summary>
+    /// Delete a category
+    /// </summary>
     [HttpDelete("{id}")]
+    [ProducesResponseType(typeof(CategoryResource), 201)]
+    [ProducesResponseType(typeof(ErrorResource), 400)]
+    [ProducesResponseType(typeof(ErrorResource), 401)]
     public async Task<IActionResult> DeleteCategory(int id)
     {
         if (!ModelState.IsValid)

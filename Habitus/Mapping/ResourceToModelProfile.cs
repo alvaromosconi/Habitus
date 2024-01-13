@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Habitus.Domain.Models;
-using Habitus.Resources;
+using Habitus.Requests;
 
 namespace Habitus.Mapping;
 
@@ -8,7 +8,7 @@ public class ResourceToModelProfile : Profile
 {
     public ResourceToModelProfile()
     {
-        CreateMap<SaveCategoryResource, Category>();
-        CreateMap<SaveHabitResource, Habit>();
+        CreateMap<SaveCategoryRequest, Category>();
+        CreateMap<SaveHabitRequest, Habit>();
     }
 }
