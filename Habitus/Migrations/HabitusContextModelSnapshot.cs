@@ -101,6 +101,28 @@ namespace Habitus.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Health"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Financial"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Personal Development"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Hobbies "
+                        });
                 });
 
             modelBuilder.Entity("Habitus.Domain.Models.Habit", b =>

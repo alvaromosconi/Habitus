@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Habitus.Migrations
 {
     /// <inheritdoc />
@@ -198,6 +200,17 @@ namespace Habitus.Migrations
                         principalTable: "Categories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Health" },
+                    { 2, "Financial" },
+                    { 3, "Personal Development" },
+                    { 4, "Hobbies " }
                 });
 
             migrationBuilder.CreateIndex(

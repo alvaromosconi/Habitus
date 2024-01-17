@@ -28,5 +28,13 @@ public class HabitusContext : IdentityDbContext<HabitusUser>
         modelBuilder.Entity<Habit>()
             .Property(e => e.SelectedDays)
             .HasConversion(dayOfWeekConverter);
+
+        modelBuilder.Entity<Category>().HasData(
+            new Category { Id = 1, Name = "Health" },
+            new Category { Id = 2, Name = "Financial" },
+            new Category { Id = 3, Name = "Personal Development" },
+            new Category { Id = 4, Name = "Hobbies " }
+        );
     }
+
 }
