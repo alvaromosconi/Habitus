@@ -4,6 +4,7 @@ using Habitus.Domain.Models.Auth;
 using Habitus.Domain.Services;
 using Habitus.Requests;
 using Habitus.Resources;
+using Habitus.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -18,14 +19,14 @@ public class HabitsController : ControllerBase
 {
     private readonly IHabitService _habitService;
     private readonly IMapper _mapper;
-    private readonly IAuthService _authService;
+    private readonly IUserService _userService;
 
     public HabitsController(IHabitService habitService,
-                            IAuthService authService,
+                            IUserService userService,
                             IMapper mapper)
     {
         _habitService = habitService;
-        _authService = authService;
+        _userService = userService;
         _mapper = mapper;
     }
 
@@ -55,8 +56,7 @@ public class HabitsController : ControllerBase
     public async Task<IActionResult> PostHabit([FromBody] SaveHabitRequest resource)
     {
         var habit = _mapper.Map<SaveHabitRequest, Habit>(resource);
-
-        var user = await GetCurrentUserAsync();
+        var user = await GetCurrentUser();
         habit.User = user;
 
         var result = await _habitService.SaveAsync(habit);
@@ -119,10 +119,10 @@ public class HabitsController : ControllerBase
         return Ok(habitResource);
     }
 
-    private async Task<HabitusUser> GetCurrentUserAsync()
+    private async Task<HabitusUser> GetCurrentUser()
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        return await _authService.GetUserByIdAsync(userId);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return _userService.GetById(userId).Result.Resource;
     }
 
 }

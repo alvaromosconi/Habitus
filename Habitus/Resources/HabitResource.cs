@@ -1,7 +1,4 @@
 ﻿using Habitus.Domain.Models;
-using Habitus.Domain.Models.Auth;
-using Swashbuckle.AspNetCore.Filters;
-using System.Collections.Generic;
 
 namespace Habitus.Resources;
 

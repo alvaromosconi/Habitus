@@ -2,8 +2,6 @@ using Habitus.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Habitus.Persistence.Repositories;
 using Habitus.Domain.Repositories;
 using Habitus.Domain.Services;
@@ -12,19 +10,28 @@ using Habitus.Controllers.Config;
 using System.Text.Json.Serialization;
 using System.Reflection;
 using Swashbuckle.AspNetCore.Filters;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Habitus.Authorization;
+using Habitus.Helpers;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 // Add services to the container.
+var appSettings = new AppSettings
+{
+    Secret = builder.Configuration["JWT:Secret"],
+    ValidAudience = builder.Configuration["JWT:ValidAudience"],
+    ValidIssuer = builder.Configuration["JWT:ValidIssuer"]
+};
+
 builder.Services.AddDbContext<HabitusContext>(opt => opt.UseSqlServer(builder.Configuration["HabitusApp:ConnectionString"], x => x.UseDateOnlyTimeOnly()));
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 // Add custom services
-builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -32,11 +39,12 @@ builder.Services.AddScoped<IHabitRepository, HabitRepository>();
 builder.Services.AddScoped<IHabitService, HabitService>();
 
 // Add Identity Service
-builder.Services.AddIdentity<HabitusUser, IdentityRole>()
+builder.Services.AddIdentity<HabitusUser, IdentityRole>(opt => opt.User.RequireUniqueEmail = true)
                 .AddEntityFrameworkStores<HabitusContext>()
                 .AddDefaultTokenProviders();
 
 // Add Auth
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -51,12 +59,17 @@ builder.Services.AddAuthentication(options =>
         {
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidAudience = builder.Configuration.GetValue<string>("JWT:ValidAudience"),
-            ValidIssuer = builder.Configuration.GetValue<string>("JWT:ValidIssuer"),
+            ValidAudience = appSettings.ValidAudience,
+            ValidIssuer = appSettings.ValidIssuer,
             ClockSkew = TimeSpan.Zero,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JWT:Secret")))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.Secret))
         };
-    });
+});
+
+
+builder.Services.AddSingleton(appSettings);
+builder.Services.AddScoped<IJwtUtils, JwtUtils>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddCors(options =>
 {
@@ -107,6 +120,7 @@ builder.Services.AddSwaggerGen(options => {
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
                                $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 });
+
 builder.Services.AddSwaggerExamplesFromAssemblies(Assembly.GetEntryAssembly());
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -124,7 +138,6 @@ app.UseHttpsRedirection();
 app.UseCors();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapControllers();

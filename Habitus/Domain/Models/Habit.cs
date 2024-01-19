@@ -6,8 +6,6 @@ namespace Habitus.Domain.Models;
 
 public class Habit
 {
-    private const string DayOfWeekSeparator = ", ";
-
     [Key]
     public int Id { get; set; }
     public string UserId { get; set; }
