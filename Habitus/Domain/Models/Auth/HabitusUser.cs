@@ -4,5 +4,6 @@ namespace Habitus.Domain.Models.Auth;
 
 public class HabitusUser : IdentityUser
 {
-    public virtual ICollection<Habit>? UserHabits { get; set; }
+    public long ChatId { get;  set; }
+    public ICollection<Habit> UserHabits { get; set; } = new List<Habit>();
 }

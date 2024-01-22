@@ -39,7 +39,9 @@ public class HabitsController : ControllerBase
     [Authorize]
     public async Task<ActionResult<HabitResource>> GetHabits()
     {
-        var habits = await _habitService.ListAsync();
+        var user = await GetCurrentUser();
+        var userId = user.Id;
+        var habits = (await _habitService.ListAsync()).Where(h => h.UserId == userId);
         var resources = _mapper.Map<IEnumerable<Habit>, IEnumerable<HabitResource>>(habits);
 
         return Ok(resources);

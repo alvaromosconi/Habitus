@@ -14,6 +14,7 @@ public interface IUserService
     Task<Response<IdentityResult?>> Register(RegisterRequest model);
     Response<IEnumerable<HabitusUser>> GetAll();
     Task<Response<HabitusUser>> GetById(string Id);
+    Task <Response<IdentityResult>> UpdateTelegramChatId(HabitusUser habitusUser, long chatId);
 }
 
 public class UserService : IUserService
@@ -79,5 +80,12 @@ public class UserService : IUserService
     public async Task<Response<HabitusUser>> GetById(string Id)
     {
         return new Response<HabitusUser>(await _userManager.FindByIdAsync(Id));
+    }
+
+    public async Task<Response<IdentityResult>> UpdateTelegramChatId(HabitusUser habitusUser, long chatId)
+    {
+        habitusUser.ChatId = chatId;
+
+        return new Response<IdentityResult>(await _userManager.UpdateAsync(habitusUser));
     }
 }

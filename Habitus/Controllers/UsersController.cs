@@ -6,6 +6,7 @@ using Habitus.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Habitus.Controllers;
 
@@ -69,4 +70,27 @@ public class UsersController : ControllerBase
         return Ok(users);
     }
 
+    /// <summary>
+    /// adada
+    /// </summary>
+    [HttpPut]
+    [ProducesResponseType(typeof(IdentityResult), 201)]
+    [Authorize]
+    public async Task<IActionResult> UpdateTelegramChatId(int chatId)
+    {
+        var response = await _userService.UpdateTelegramChatId(await GetCurrentUser(), chatId);
+
+        if (response.Resource.Succeeded == false)
+        {
+            return BadRequest(new { message = response.Resource.Errors });
+        }
+
+        return Ok(response);
+    }
+
+    private async Task<HabitusUser> GetCurrentUser()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return _userService.GetById(userId).Result.Resource;
+    }
 }

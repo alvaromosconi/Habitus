@@ -1,4 +1,5 @@
 ﻿using Habitus.Domain.Models;
+using Habitus.Domain.Models.Auth;
 using Habitus.Domain.Repositories;
 using Habitus.Domain.Services;
 using Habitus.Domain.Services.Communication;
@@ -10,14 +11,17 @@ public class HabitService : IHabitService
     private readonly IHabitRepository _habitRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IReminderService _reminderService;
 
     public HabitService(IHabitRepository habitRepository,
                         ICategoryRepository categoryRepository, 
-                        IUnitOfWork unitOfWork)
+                        IUnitOfWork unitOfWork,
+                        IReminderService reminderService)
     {
         _habitRepository = habitRepository;
         _categoryRepository = categoryRepository;
         _unitOfWork = unitOfWork;
+        _reminderService = reminderService;
     }
     public async Task<IEnumerable<Habit>> ListAsync()
     {
@@ -37,6 +41,8 @@ public class HabitService : IHabitService
 
             await _habitRepository.AddAsync(habit);
             await _unitOfWork.CompleteAsync();
+
+            await _reminderService.ScheduleReminder(habit);
 
             return new Response<Habit>(habit);
         }

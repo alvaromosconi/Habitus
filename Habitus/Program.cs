@@ -23,10 +23,12 @@ var appSettings = new AppSettings
 {
     Secret = builder.Configuration["JWT:Secret"],
     ValidAudience = builder.Configuration["JWT:ValidAudience"],
-    ValidIssuer = builder.Configuration["JWT:ValidIssuer"]
+    ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+    TelegramToken = builder.Configuration["Telegram:Token"],
+    TelegramBotUsername = builder.Configuration["Telegram:Username"]
 };
 
-builder.Services.AddDbContext<HabitusContext>(opt => opt.UseSqlServer(builder.Configuration["HabitusApp:ConnectionString"], x => x.UseDateOnlyTimeOnly()));
+builder.Services.AddDbContextFactory<HabitusContext>(b => b.UseSqlServer(builder.Configuration["HabitusApp:ConnectionString"], x => x.UseDateOnlyTimeOnly()));
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -70,6 +72,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddSingleton(appSettings);
 builder.Services.AddScoped<IJwtUtils, JwtUtils>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<TelegramService, TelegramService>();
+builder.Services.AddScoped<IReminderService, ReminderService>();
 
 builder.Services.AddCors(options =>
 {
@@ -123,6 +127,8 @@ builder.Services.AddSwaggerGen(options => {
 
 builder.Services.AddSwaggerExamplesFromAssemblies(Assembly.GetEntryAssembly());
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddHostedService<TelegramService>();
+var serviceProvider = builder.Services.BuildServiceProvider();
 
 var app = builder.Build();
 
@@ -143,3 +149,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+
+
