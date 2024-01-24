@@ -10,6 +10,7 @@ public class ModelToResourceProfile : Profile
     public ModelToResourceProfile()
     {
         CreateMap<HabitusUser, AuthenticateResponse>();
+        CreateMap<HabitusUser, RegisterResource>();
         CreateMap<Category, CategoryResource>();
         CreateMap<Habit, HabitResource>()
             .ForMember(dest => dest.User, opt => opt.MapFrom(src => new HabitusUserResource { UserId = src.User.Id, UserName = src.User.UserName }));

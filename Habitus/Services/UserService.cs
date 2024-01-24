@@ -11,10 +11,10 @@ namespace Habitus.Services;
 public interface IUserService
 {
     Task<Response<AuthenticateResponse?>> Authenticate(AuthenticateRequest model);
-    Task<Response<IdentityResult?>> Register(RegisterRequest model);
+    Task<Response<RegisterResource>> Register(RegisterRequest model);
     Response<IEnumerable<HabitusUser>> GetAll();
     Task<Response<HabitusUser>> GetById(string Id);
-    Task <Response<IdentityResult>> UpdateTelegramChatId(HabitusUser habitusUser, long chatId);
+    Task <Response<HabitusUser>> UpdateTelegramChatId(HabitusUser habitusUser, long chatId);
 }
 
 public class UserService : IUserService
@@ -35,9 +35,9 @@ public class UserService : IUserService
     public async Task<Response<AuthenticateResponse?>> Authenticate(AuthenticateRequest request)
     {
         AuthenticateResponse output;
-        var user = await _userManager.FindByNameAsync(request.Username);
+        var user = await _userManager.FindByEmailAsync(request.Email);
 
-        if (user == null) return new Response<AuthenticateResponse>("Username not found");
+        if (user == null) return new Response<AuthenticateResponse>("Email not found");
 
         var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, request.Password);
 
@@ -50,26 +50,44 @@ public class UserService : IUserService
         return new Response<AuthenticateResponse>(output);
     }
 
-    public async Task<Response<IdentityResult>> Register(RegisterRequest request)
-    {      
+    public async Task<Response<RegisterResource>> Register(RegisterRequest request)
+    {
         var user = new HabitusUser
         {
             Email = request.Email,
             SecurityStamp = Guid.NewGuid().ToString(),
-            UserName = request.Username,
+            UserName = request.Email,
             PhoneNumber = request.PhoneNumber,
         };
 
-        UserValidator<HabitusUser> validator = new UserValidator<HabitusUser>();
-        var validationResult = await validator.ValidateAsync(_userManager, user);
+        var output = _mapper.Map<HabitusUser, RegisterResource>(user);
+        var validationResult = await ValidateUserAsync(user);
 
-        if (validationResult.Succeeded == true)
+        string errorMessage = null;
+
+        if (!validationResult.Succeeded)
+        {
+            errorMessage = validationResult.Errors.ToString();
+        }
+        else
         {
             var createUserResult = await _userManager.CreateAsync(user, request.Password);
-            return new Response<IdentityResult>(createUserResult);
+
+            if (!createUserResult.Succeeded)
+            {
+                errorMessage = createUserResult.ToString();
+            }
         }
 
-        return new Response<IdentityResult>(validationResult);
+        return errorMessage != null
+            ? new Response<RegisterResource>(errorMessage)
+            : new Response<RegisterResource>(output);
+    }
+
+    private async Task<IdentityResult> ValidateUserAsync(HabitusUser user)
+    {
+        var validator = new UserValidator<HabitusUser>();
+        return await validator.ValidateAsync(_userManager, user);
     }
 
     public Response<IEnumerable<HabitusUser>> GetAll()
@@ -82,10 +100,16 @@ public class UserService : IUserService
         return new Response<HabitusUser>(await _userManager.FindByIdAsync(Id));
     }
 
-    public async Task<Response<IdentityResult>> UpdateTelegramChatId(HabitusUser habitusUser, long chatId)
+    public async Task<Response<HabitusUser>> UpdateTelegramChatId(HabitusUser habitusUser, long chatId)
     {
         habitusUser.ChatId = chatId;
+        var result = await _userManager.UpdateAsync(habitusUser);
 
-        return new Response<IdentityResult>(await _userManager.UpdateAsync(habitusUser));
+        if (result.Succeeded == true)
+        {
+            return new Response<HabitusUser>(habitusUser);
+        }
+
+        return new Response<HabitusUser>("Error updating telegram chat id.");
     }
 }

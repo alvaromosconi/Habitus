@@ -97,6 +97,10 @@ builder.Services.AddControllers()
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options => {
+
+    var info = new OpenApiInfo { Title = "api", Version = "v1" };
+    options.SwaggerDoc(name: "v1", info: info);
+
     var jwtSecurityScheme = new OpenApiSecurityScheme
     {
         BearerFormat = "JWT",
@@ -132,10 +136,10 @@ var serviceProvider = builder.Services.BuildServiceProvider();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseSwagger();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
     app.UseSwaggerUI();
 }
 

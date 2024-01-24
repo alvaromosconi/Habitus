@@ -11,7 +11,7 @@ using System.Security.Claims;
 
 namespace Habitus.Controllers;
 
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiController]
 [Produces("application/json")]
 
@@ -110,6 +110,28 @@ public class HabitsController : ControllerBase
     public async Task<IActionResult> DeleteHabit(int id)
     {
         var result = await _habitService.DeleteAsync(id);
+
+        if (!result.Success)
+        {
+            return BadRequest(result.Message);
+        }
+
+        var habitResource = _mapper.Map<Habit, HabitResource>(result.Resource);
+
+        return Ok(habitResource);
+    }
+
+    /// <summary>
+    /// Delete a habit
+    /// </summary>
+    [HttpPut("enableTelegram/{id}")]
+    [Authorize]
+    [ProducesResponseType(typeof(HabitResource), 201)]
+    [ProducesResponseType(typeof(ErrorResource), 400)]
+    [ProducesResponseType(typeof(ErrorResource), 401)]
+    public async Task<IActionResult> ToggleTelegramReminder(int id)
+    {
+        var result = await _habitService.ToggleTelegramReminder(id);
 
         if (!result.Success)
         {

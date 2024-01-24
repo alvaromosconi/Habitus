@@ -48,7 +48,7 @@ public class JwtUtils : IJwtUtils
         };
 
         var token = tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
-
+        
         return tokenHandler.WriteToken(token);
     }
 

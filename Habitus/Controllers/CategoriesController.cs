@@ -10,7 +10,8 @@ using Habitus.Requests;
 
 namespace Habitus.Controllers;
 
-[Route("api/[controller]")]
+
+[Route("[controller]")]
 [ApiController]
 [Produces("application/json")]
 public class CategoriesController : ControllerBase

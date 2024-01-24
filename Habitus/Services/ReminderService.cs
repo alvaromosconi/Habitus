@@ -14,7 +14,7 @@ public class ReminderService : IReminderService
     }
     public async Task ScheduleReminder(Habit habit)
     {
-        string message = $"¡It's time for your habit: {habit.Name}!\n\n{habit.Description}";
+        string message = $"¡It's time for your habit!: {habit.Name}\n\n{habit.Description}";
 
         try
         {

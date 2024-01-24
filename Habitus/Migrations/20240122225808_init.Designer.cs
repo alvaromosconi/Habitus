@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Habitus.Migrations
 {
     [DbContext(typeof(HabitusContext))]
-    [Migration("20240121224114_init")]
+    [Migration("20240122225808_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -152,6 +152,9 @@ namespace Habitus.Migrations
                     b.Property<TimeOnly>("NotificationTime")
                         .HasColumnType("time");
 
+                    b.Property<bool>("NotifyByTelegram")
+                        .HasColumnType("bit");
+
                     b.Property<string>("SelectedDays")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -170,259 +173,6 @@ namespace Habitus.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Habits");
-                });
-
-            modelBuilder.Entity("Hangfire.EntityFrameworkCore.HangfireCounter", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime?>("ExpireAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<long>("Value")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExpireAt");
-
-                    b.HasIndex("Key", "Value");
-
-                    b.ToTable("HangfireCounter");
-                });
-
-            modelBuilder.Entity("Hangfire.EntityFrameworkCore.HangfireHash", b =>
-                {
-                    b.Property<string>("Key")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("Field")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTime?>("ExpireAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Key", "Field");
-
-                    b.HasIndex("ExpireAt");
-
-                    b.ToTable("HangfireHash");
-                });
-
-            modelBuilder.Entity("Hangfire.EntityFrameworkCore.HangfireJob", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ExpireAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("InvocationData")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long?>("StateId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("StateName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExpireAt");
-
-                    b.HasIndex("StateId");
-
-                    b.HasIndex("StateName");
-
-                    b.ToTable("HangfireJob");
-                });
-
-            modelBuilder.Entity("Hangfire.EntityFrameworkCore.HangfireJobParameter", b =>
-                {
-                    b.Property<long>("JobId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("JobId", "Name");
-
-                    b.ToTable("HangfireJobParameter");
-                });
-
-            modelBuilder.Entity("Hangfire.EntityFrameworkCore.HangfireList", b =>
-                {
-                    b.Property<string>("Key")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("ExpireAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Key", "Position");
-
-                    b.HasIndex("ExpireAt");
-
-                    b.ToTable("HangfireList");
-                });
-
-            modelBuilder.Entity("Hangfire.EntityFrameworkCore.HangfireLock", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTime>("AcquiredAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("HangfireLock");
-                });
-
-            modelBuilder.Entity("Hangfire.EntityFrameworkCore.HangfireQueuedJob", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime?>("FetchedAt")
-                        .IsConcurrencyToken()
-                        .HasColumnType("datetime2");
-
-                    b.Property<long>("JobId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Queue")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("JobId");
-
-                    b.HasIndex("Queue", "FetchedAt");
-
-                    b.ToTable("HangfireQueuedJob");
-                });
-
-            modelBuilder.Entity("Hangfire.EntityFrameworkCore.HangfireServer", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTime>("Heartbeat")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Queues")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("StartedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("WorkerCount")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Heartbeat");
-
-                    b.ToTable("HangfireServer");
-                });
-
-            modelBuilder.Entity("Hangfire.EntityFrameworkCore.HangfireSet", b =>
-                {
-                    b.Property<string>("Key")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Value")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTime?>("ExpireAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("Score")
-                        .HasColumnType("float");
-
-                    b.HasKey("Key", "Value");
-
-                    b.HasIndex("ExpireAt");
-
-                    b.HasIndex("Key", "Score");
-
-                    b.ToTable("HangfireSet");
-                });
-
-            modelBuilder.Entity("Hangfire.EntityFrameworkCore.HangfireState", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Data")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("JobId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("JobId");
-
-                    b.ToTable("HangfireState");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -577,48 +327,6 @@ namespace Habitus.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Hangfire.EntityFrameworkCore.HangfireJob", b =>
-                {
-                    b.HasOne("Hangfire.EntityFrameworkCore.HangfireState", "State")
-                        .WithMany()
-                        .HasForeignKey("StateId");
-
-                    b.Navigation("State");
-                });
-
-            modelBuilder.Entity("Hangfire.EntityFrameworkCore.HangfireJobParameter", b =>
-                {
-                    b.HasOne("Hangfire.EntityFrameworkCore.HangfireJob", "Job")
-                        .WithMany("Parameters")
-                        .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Job");
-                });
-
-            modelBuilder.Entity("Hangfire.EntityFrameworkCore.HangfireQueuedJob", b =>
-                {
-                    b.HasOne("Hangfire.EntityFrameworkCore.HangfireJob", "Job")
-                        .WithMany("QueuedJobs")
-                        .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Job");
-                });
-
-            modelBuilder.Entity("Hangfire.EntityFrameworkCore.HangfireState", b =>
-                {
-                    b.HasOne("Hangfire.EntityFrameworkCore.HangfireJob", "Job")
-                        .WithMany("States")
-                        .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Job");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -678,15 +386,6 @@ namespace Habitus.Migrations
             modelBuilder.Entity("Habitus.Domain.Models.Category", b =>
                 {
                     b.Navigation("habits");
-                });
-
-            modelBuilder.Entity("Hangfire.EntityFrameworkCore.HangfireJob", b =>
-                {
-                    b.Navigation("Parameters");
-
-                    b.Navigation("QueuedJobs");
-
-                    b.Navigation("States");
                 });
 #pragma warning restore 612, 618
         }
