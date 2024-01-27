@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "apis1": {
+      "apiEndpoint": "https://habitusapi.azure-api.net/api",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.ApiManagement/service/HabitusAPI/apis/HabitusAPI",
+      "type": "apis.azure"
+    }
+  }
+}

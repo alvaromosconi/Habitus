@@ -11,5 +11,6 @@ public record HabitResource
     public string? Description { get; init; }
     public TimeOnly NotificationTime { get; init; }
     public List<DayOfWeek> SelectedDays { get; init; }
+    public bool NotifyByTelegram { get; init; }
     public HabitState State { get; init; }
 }

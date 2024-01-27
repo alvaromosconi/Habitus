@@ -121,6 +121,28 @@ public class HabitsController : ControllerBase
         return Ok(habitResource);
     }
 
+    /// <summary>
+    /// Delete a habit
+    /// </summary>
+    [HttpPut("enableTelegram/{id}")]
+    [Authorize]
+    [ProducesResponseType(typeof(HabitResource), 201)]
+    [ProducesResponseType(typeof(ErrorResource), 400)]
+    [ProducesResponseType(typeof(ErrorResource), 401)]
+    public async Task<IActionResult> ToggleTelegramReminder(int id)
+    {
+        var result = await _habitService.ToggleTelegramReminder(id);
+
+        if (!result.Success)
+        {
+            return BadRequest(result.Message);
+        }
+
+        var habitResource = _mapper.Map<Habit, HabitResource>(result.Resource);
+
+        return Ok(habitResource);
+    }
+
     private async Task<HabitusUser> GetCurrentUser()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

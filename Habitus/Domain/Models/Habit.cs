@@ -16,6 +16,7 @@ public class Habit
     public string? Description { get; set; }
     public List<DayOfWeek> SelectedDays { get; set; }
     public TimeOnly NotificationTime { get; set; }
+    public bool NotifyByTelegram { get; set; } = false;
     public HabitState State { get; set; }
 
 };

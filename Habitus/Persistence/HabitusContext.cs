@@ -3,7 +3,6 @@ using Habitus.Domain.Models.Auth;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 public class HabitusContext : IdentityDbContext<HabitusUser>
 {
@@ -18,16 +17,20 @@ public class HabitusContext : IdentityDbContext<HabitusUser>
     {
         base.OnModelCreating(modelBuilder);
 
-        var dayOfWeekConverter = new ValueConverter<List<DayOfWeek>, string>(
-            v => string.Join(", ", v),
-            s => s.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries)
-                  .Select(dayStr => Enum.Parse<DayOfWeek>(dayStr))
-                  .ToList()
+        var dayOfWeekConverter = new ValueConverter<DayOfWeek, string>(
+            v => v.ToString(),
+            s => Enum.Parse<DayOfWeek>(s)
+        );
+
+        var listDayOfWeekConverter = new ValueConverter<List<DayOfWeek>, string>(
+            v => string.Join(", ", v.Select(d => d.ToString())),
+            s => s.Split(", ", StringSplitOptions.RemoveEmptyEntries)
+                  .Select(d => Enum.Parse<DayOfWeek>(d)).ToList()
         );
 
         modelBuilder.Entity<Habit>()
-            .Property(e => e.SelectedDays)
-            .HasConversion(dayOfWeekConverter);
+            .Property(h => h.SelectedDays)
+            .HasConversion(listDayOfWeekConverter);
 
         modelBuilder.Entity<Category>().HasData(
             new Category { Id = 1, Name = "Health" },

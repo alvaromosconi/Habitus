@@ -9,4 +9,5 @@ public interface IHabitService
     Task<Response<Habit>> SaveAsync(Habit habit);
     Task<Response<Habit>> UpdateAsync(int id, Habit habit);
     Task<Response<Habit>> DeleteAsync(int id);
+    Task<Response<Habit>> ToggleTelegramReminder(int id);
 }

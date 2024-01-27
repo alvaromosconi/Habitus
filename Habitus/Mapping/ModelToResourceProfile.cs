@@ -9,6 +9,7 @@ public class ModelToResourceProfile : Profile
 {
     public ModelToResourceProfile()
     {
+        CreateMap<HabitusUser, RegisterResource>();
         CreateMap<HabitusUser, AuthenticateResponse>();
         CreateMap<Category, CategoryResource>();
         CreateMap<Habit, HabitResource>()

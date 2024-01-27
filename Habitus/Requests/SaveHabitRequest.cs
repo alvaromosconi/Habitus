@@ -33,7 +33,7 @@ public record SaveHabitRequest
     /// The list of days when the habit occurs.
     /// </summary>
     [Required]
-    public List<DayOfWeek> SelectedDays { get; init; }
+    public List<string> SelectedDays { get; init; }
 
     /// <summary>
     /// The specific time during the day when the notification appears
@@ -57,7 +57,7 @@ public class SaveHabitRequestExample : IExamplesProvider<SaveHabitRequest>
             CategoryId = 1,
             Name = "Morning Exercise",
             Description = "Daily morning workout routine",
-            SelectedDays = new List<DayOfWeek> { DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday },
+            SelectedDays = new List<string> { "asdasd"},
             NotificationTime = new TimeOnly(08,00),
             State = HabitState.Active
         };

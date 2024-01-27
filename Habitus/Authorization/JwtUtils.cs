@@ -41,8 +41,6 @@ public class JwtUtils : IJwtUtils
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             }),
-            Audience = _appSettings.ValidAudience,
-            Issuer = _appSettings.ValidIssuer,
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
         };
@@ -65,10 +63,8 @@ public class JwtUtils : IJwtUtils
         {
             tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidAudience = _appSettings.ValidAudience,
-                ValidIssuer = _appSettings.ValidIssuer,
+                ValidateIssuer = false,
+                ValidateAudience = false,
                 ClockSkew = TimeSpan.Zero,
                 IssuerSigningKey = new SymmetricSecurityKey(key)
             }, out SecurityToken validatedToken);

@@ -6,29 +6,39 @@ using Habitus.Persistence.Repositories;
 using Habitus.Domain.Repositories;
 using Habitus.Domain.Services;
 using Habitus.Domain.Models.Auth;
-using Habitus.Controllers.Config;
-using System.Text.Json.Serialization;
-using System.Reflection;
-using Swashbuckle.AspNetCore.Filters;
-using Microsoft.OpenApi.Models;
 using Habitus.Authorization;
 using Habitus.Helpers;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Habitus.Controllers.Config;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var keyVaultEndpoint = new Uri("https://habitusvault.vault.azure.net/");
+builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
+
 var appSettings = new AppSettings
 {
-    Secret = builder.Configuration["JWT:Secret"],
-    ValidAudience = builder.Configuration["JWT:ValidAudience"],
-    ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-    TelegramToken = builder.Configuration["Telegram:Token"],
-    TelegramBotUsername = builder.Configuration["Telegram:Username"]
+    ConnectionString = GetSecretFromKeyVault(keyVaultEndpoint, "connectionString"),
+    Secret = GetSecretFromKeyVault(keyVaultEndpoint,"jwt-secret"),
+    TelegramToken = GetSecretFromKeyVault(keyVaultEndpoint,"telegram-token"),
+    TelegramBotUsername = GetSecretFromKeyVault(keyVaultEndpoint,"telegram-username")
 };
 
-builder.Services.AddDbContextFactory<HabitusContext>(b => b.UseSqlServer(builder.Configuration["HabitusApp:ConnectionString"], x => x.UseDateOnlyTimeOnly()));
+// Function to retrieve secrets from Azure Key Vault
+string GetSecretFromKeyVault(Uri secretUri, string secretName)
+{
+    var secretClient = new SecretClient(keyVaultEndpoint, new DefaultAzureCredential());
+
+    var secret = secretClient.GetSecret(secretName);
+
+    return secret.Value.Value;
+}
+
+builder.Services.AddDbContextFactory<HabitusContext>(b => b.UseSqlServer(appSettings.ConnectionString, x => x.UseDateOnlyTimeOnly()));
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -59,14 +69,12 @@ builder.Services.AddAuthentication(options =>
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters()
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidAudience = appSettings.ValidAudience,
-            ValidIssuer = appSettings.ValidIssuer,
+            ValidateIssuer = false,
+            ValidateAudience = false,
             ClockSkew = TimeSpan.Zero,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.Secret))
         };
-});
+    });
 
 
 builder.Services.AddSingleton(appSettings);
@@ -95,8 +103,17 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
+
 builder.Services.AddEndpointsApiExplorer();
+/*
 builder.Services.AddSwaggerGen(options => {
+
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "MyAPI",
+        Version = "v1"
+    });
+
     var jwtSecurityScheme = new OpenApiSecurityScheme
     {
         BearerFormat = "JWT",
@@ -124,20 +141,17 @@ builder.Services.AddSwaggerGen(options => {
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
                                $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 });
+*/
 
-builder.Services.AddSwaggerExamplesFromAssemblies(Assembly.GetEntryAssembly());
+//builder.Services.AddSwaggerExamplesFromAssemblies(Assembly.GetEntryAssembly());
+
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddHostedService<TelegramService>();
-var serviceProvider = builder.Services.BuildServiceProvider();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//app.UseSwagger();
+//app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
@@ -149,7 +163,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-
-
-

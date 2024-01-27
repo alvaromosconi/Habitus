@@ -50,9 +50,9 @@ public class UsersController : ControllerBase
     {
         var response = await _userService.Register(request);
 
-        if (response.Resource.Succeeded == false)
+        if (response.Success == false)
         {
-            return BadRequest(new { message = response.Resource.Errors });
+            return BadRequest(response);
         }
 
         return Ok(response);
@@ -80,9 +80,9 @@ public class UsersController : ControllerBase
     {
         var response = await _userService.UpdateTelegramChatId(await GetCurrentUser(), chatId);
 
-        if (response.Resource.Succeeded == false)
+        if (response.Success == false)
         {
-            return BadRequest(new { message = response.Resource.Errors });
+            return BadRequest(response.Message);
         }
 
         return Ok(response);

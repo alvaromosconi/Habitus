@@ -1,5 +1,4 @@
 ﻿using Habitus.Domain.Models;
-using Habitus.Domain.Models.Auth;
 using Habitus.Domain.Repositories;
 using Habitus.Domain.Services;
 using Habitus.Domain.Services.Communication;
@@ -14,7 +13,7 @@ public class HabitService : IHabitService
     private readonly IReminderService _reminderService;
 
     public HabitService(IHabitRepository habitRepository,
-                        ICategoryRepository categoryRepository, 
+                        ICategoryRepository categoryRepository,
                         IUnitOfWork unitOfWork,
                         IReminderService reminderService)
     {
@@ -42,7 +41,10 @@ public class HabitService : IHabitService
             await _habitRepository.AddAsync(habit);
             await _unitOfWork.CompleteAsync();
 
-            await _reminderService.ScheduleReminder(habit);
+            if (habit.NotifyByTelegram)
+            {
+                await _reminderService.ScheduleReminder(habit);
+            }
 
             return new Response<Habit>(habit);
         }
@@ -76,7 +78,7 @@ public class HabitService : IHabitService
         existingHabit.Name = habit.Name;
 
         try
-        { 
+        {
             _habitRepository.Update(existingHabit);
             await _unitOfWork.CompleteAsync();
 
@@ -84,7 +86,7 @@ public class HabitService : IHabitService
         }
         catch (Exception ex)
         {
-            return new Response<Habit>($"An error occurred when saving the category: {ex.Message}");
+            return new Response<Habit>($"An error occurred when saving the habit: {ex.Message}");
         }
     }
 
@@ -105,6 +107,39 @@ public class HabitService : IHabitService
         catch (Exception ex)
         {
             return new Response<Habit>($"An error occurred when deleting the habit: {ex.Message}");
+        }
+    }
+
+    public async Task<Response<Habit>> ToggleTelegramReminder(int id)
+    {
+        var existingHabit = await _habitRepository.FindByIdAsync(id);
+
+        if (existingHabit == null)
+        {
+            return new Response<Habit>("Habit not found.");
+        }
+
+        if (existingHabit.NotifyByTelegram == false)
+        {
+            existingHabit.NotifyByTelegram = true;
+        }
+        else
+        {
+            existingHabit.NotifyByTelegram = false;
+        }
+
+        await _reminderService.ScheduleReminder(existingHabit);
+
+        try
+        {
+            _habitRepository.Update(existingHabit);
+            await _unitOfWork.CompleteAsync();
+
+            return new Response<Habit>(existingHabit);
+        }
+        catch (Exception ex)
+        {
+            return new Response<Habit>($"An error occurred when saving the habit: {ex.Message}");
         }
     }
 }
