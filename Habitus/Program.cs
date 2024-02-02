@@ -14,6 +14,8 @@ using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Habitus.Controllers.Config;
 using System.Text.Json.Serialization;
+using Hangfire;
+using Hangfire.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,23 +24,36 @@ builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredent
 
 var appSettings = new AppSettings
 {
-    ConnectionString = GetSecretFromKeyVault(keyVaultEndpoint, "connectionString"),
-    Secret = GetSecretFromKeyVault(keyVaultEndpoint,"jwt-secret"),
-    TelegramToken = GetSecretFromKeyVault(keyVaultEndpoint,"telegram-token"),
-    TelegramBotUsername = GetSecretFromKeyVault(keyVaultEndpoint,"telegram-username")
+    ConnectionString = await GetSecretFromKeyVaultAsync(keyVaultEndpoint, "connectionString"),
+    Secret = await GetSecretFromKeyVaultAsync(keyVaultEndpoint,"jwt-secret"),
+    TelegramToken = await GetSecretFromKeyVaultAsync(keyVaultEndpoint,"telegram-token"),
+    TelegramBotUsername = await GetSecretFromKeyVaultAsync(keyVaultEndpoint,"telegram-username")
 };
 
 // Function to retrieve secrets from Azure Key Vault
-string GetSecretFromKeyVault(Uri secretUri, string secretName)
+async Task<string> GetSecretFromKeyVaultAsync(Uri secretUri, string secretName)
 {
     var secretClient = new SecretClient(keyVaultEndpoint, new DefaultAzureCredential());
 
-    var secret = secretClient.GetSecret(secretName);
+    var secret = await secretClient.GetSecretAsync(secretName);
 
     return secret.Value.Value;
 }
 
 builder.Services.AddDbContextFactory<HabitusContext>(b => b.UseSqlServer(appSettings.ConnectionString, x => x.UseDateOnlyTimeOnly()));
+builder.Services.AddHangfire((serviceProvider, configuration) =>
+    configuration.UseEFCoreStorage(
+        () => serviceProvider.GetRequiredService<IDbContextFactory<HabitusContext>>().CreateDbContext(),
+        new EFCoreStorageOptions
+        {
+            CountersAggregationInterval = new TimeSpan(0, 5, 0),
+            DistributedLockTimeout = new TimeSpan(0, 10, 0),
+            JobExpirationCheckInterval = new TimeSpan(0, 30, 0),
+            QueuePollInterval = new TimeSpan(0, 0, 15),
+            Schema = string.Empty,
+            SlidingInvisibilityTimeout = new TimeSpan(0, 5, 0),
+        }));
+
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -147,7 +162,7 @@ builder.Services.AddSwaggerGen(options => {
 
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddHostedService<TelegramService>();
-
+builder.Services.AddHangfireServer();
 var app = builder.Build();
 
 //app.UseSwagger();

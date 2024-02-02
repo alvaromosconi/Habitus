@@ -4,5 +4,6 @@ namespace Habitus.Domain.Services;
 
 public interface IReminderService
 {
-    Task ScheduleReminder(Habit habit);
+    void RemoveScheduledReminders(Habit habit);
+    void ScheduleReminder(Habit habit);
 }

@@ -1,5 +1,6 @@
 ﻿using Habitus.Domain.Models;
 using Habitus.Domain.Models.Auth;
+using Hangfire.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -16,6 +17,7 @@ public class HabitusContext : IdentityDbContext<HabitusUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.OnHangfireModelCreating();
 
         var dayOfWeekConverter = new ValueConverter<DayOfWeek, string>(
             v => v.ToString(),

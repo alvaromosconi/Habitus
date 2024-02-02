@@ -77,18 +77,15 @@ namespace Habitus.Services
             {
                 var chatId = message.Chat.Id;
                 var response = $"Your code is: {chatId}. Copy and paste it back into Habitus for confirmation.";
-                await ScheduleMessage(DateTime.Now.Hour, DateTime.Now.Minute + 1, response, chatId);
+                DateTime messageTime = DateTime.Now;
+                await SendMessage(chatId, response);
             }
-     
+
         }
 
-        public async Task ScheduleMessage(int hour, int minute, string? messageText, long chatId)
+        public async Task ScheduleMessage(string? messageText, long chatId)
         {
-            DateTime now = DateTime.Now;
-            DateTime scheduledTime = new DateTime(now.Year, now.Month, now.Day, hour, minute, 0);
-            TimeSpan timeUntilNextExecution = scheduledTime > now ? scheduledTime - now : TimeSpan.FromHours(24) - (now - scheduledTime);
-
-            Timer timer = new Timer(async _ => await SendMessage(chatId, messageText), null, timeUntilNextExecution, TimeSpan.FromHours(24));
+            await SendMessage(chatId, messageText);
         }
 
         public async Task SendMessage(long chatId, string? messageText)

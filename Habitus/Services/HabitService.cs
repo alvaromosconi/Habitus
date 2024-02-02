@@ -43,7 +43,7 @@ public class HabitService : IHabitService
 
             if (habit.NotifyByTelegram)
             {
-                await _reminderService.ScheduleReminder(habit);
+                _reminderService.ScheduleReminder(habit);
             }
 
             return new Response<Habit>(habit);
@@ -70,6 +70,9 @@ public class HabitService : IHabitService
             return new Response<Habit>("Invalid category");
         }
 
+        bool scheduledRemindersHasChanged = existingHabit.SelectedDays.Intersect(habit.SelectedDays).Any() || 
+                                            existingHabit.NotificationTime != habit.NotificationTime;
+
         existingHabit.State = habit.State;
         existingHabit.NotificationTime = habit.NotificationTime;
         existingHabit.SelectedDays = habit.SelectedDays;
@@ -81,6 +84,12 @@ public class HabitService : IHabitService
         {
             _habitRepository.Update(existingHabit);
             await _unitOfWork.CompleteAsync();
+
+            if (scheduledRemindersHasChanged)
+            {
+                _reminderService.RemoveScheduledReminders(existingHabit);
+                _reminderService.ScheduleReminder(existingHabit);
+            }
 
             return new Response<Habit>(existingHabit);
         }
@@ -102,6 +111,8 @@ public class HabitService : IHabitService
             _habitRepository.Remove(existingHabit);
             await _unitOfWork.CompleteAsync();
 
+            _reminderService.RemoveScheduledReminders(existingHabit);
+
             return new Response<Habit>(existingHabit);
         }
         catch (Exception ex)
@@ -122,13 +133,13 @@ public class HabitService : IHabitService
         if (existingHabit.NotifyByTelegram == false)
         {
             existingHabit.NotifyByTelegram = true;
+            _reminderService.ScheduleReminder(existingHabit);
         }
         else
         {
             existingHabit.NotifyByTelegram = false;
+            _reminderService.RemoveScheduledReminders(existingHabit);
         }
-
-        await _reminderService.ScheduleReminder(existingHabit);
 
         try
         {
