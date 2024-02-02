@@ -1,13 +1,11 @@
 ﻿using Habitus.Domain.Models;
 using Habitus.Domain.Services;
 using Hangfire;
-using System;
 
 namespace Habitus.Services;
 
 public class ReminderService : IReminderService
 {
-
     private readonly TelegramService _telegramService;
 
     public ReminderService(TelegramService telegramService)
@@ -48,7 +46,6 @@ public class ReminderService : IReminderService
 
         return nextReminder;
     }
-
     public void RemoveScheduledReminders(Habit habit)
     {
         if (habit.NotifyByTelegram)
