@@ -76,7 +76,7 @@ public class UsersController : ControllerBase
     [HttpPut]
     [ProducesResponseType(typeof(IdentityResult), 201)]
     [Authorize]
-    public async Task<IActionResult> UpdateTelegramChatId(int chatId)
+    public async Task<IActionResult> UpdateTelegramChatId(long chatId)
     {
         var response = await _userService.UpdateTelegramChatId(await GetCurrentUser(), chatId);
 
